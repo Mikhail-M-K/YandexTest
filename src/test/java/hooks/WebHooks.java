@@ -1,11 +1,10 @@
 package hooks;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
+import org.junit.*;
 import org.openqa.selenium.By;
 
 import static com.codeborne.selenide.Selenide.*;
+
 
 public class WebHooks {
     @Before

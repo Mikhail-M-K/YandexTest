@@ -1,15 +1,15 @@
-import org.junit.After;
+import hooks.WebHooks;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.By;
 
 import static com.codeborne.selenide.Selenide.*;
 
-public class RunTest {
+public class RunTest extends WebHooks {
 
     @Test
-    public void parametersOneCar() {
+    public void parametersOneCar()  {
+
         $(By.xpath("//input[@placeholder='Модель']")).click();
         sleep(1000);
         $(By.xpath("//input[@placeholder='Модель']")).setValue("Camry");
