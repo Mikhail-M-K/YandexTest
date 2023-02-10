@@ -2,8 +2,8 @@ package Jira.pageElements;
 
 import com.codeborne.selenide.SelenideElement;
 
-import static Jira.pageElements.PopupCreate.btnConfirmError;
-import static Jira.pageElements.PopupCreate.btnExecutedError;
+import static Jira.pageElements.NavigationBar.*;
+import static Jira.pageElements.PopupCreate.*;
 import static com.codeborne.selenide.Selenide.$x;
 import static com.codeborne.selenide.Selenide.sleep;
 
@@ -15,14 +15,17 @@ public class BoardPage {
     public static SelenideElement searchInput = $x("//input[@placeholder='Содержит текст']");
     public static SelenideElement btnSearch = $x("//button[contains(text(),'Поиск')]").as("Кнопка Поиск");
     public static SelenideElement header = $x("//h1[@id='summary-val']").as("Заголовок");
+    public static SelenideElement listTask = $x("//div[contains(text(),'Список задач')]/following-sibling::div").as("Вывод списка задач");
     public static SelenideElement statusText = $x("//strong[contains(text(),'Статус:')]/following-sibling::span").as("Вывод статуса");
     public static SelenideElement versionText = $x("//strong[@title='Затронуты версии']/following-sibling::span").as("Привязка в затронутой версии");
     public static SelenideElement btnInWork = $x("//span[contains(text(),'В работе')]").as("Статус В работе");
     public static SelenideElement btnBusinessProcess = $x("//span[contains(text(),'Бизнес-процесс')]").as("Выбор статуса Бизнес-процесс");
     public static SelenideElement btnDone = $x("//span[contains(text(),'Выполнено')]/parent::a").as("Выбор статуса Выполнено");
+    public static SelenideElement btnListTasks = $x("//span[contains(text(),'Список задач')]/parent::a").as("Выбор статуса Список задач");
     public static SelenideElement btnExecuted = $x("//span[contains(text(),'Исполнено')]/parent::a").as("Выбор статуса Исполнено");
     public static SelenideElement btnConfirm = $x("//span[contains(text(),'Подтверждено')]/parent::a").as("Кнопка Подтверждено");
-
+    public static SelenideElement infoTasks1 = $x("//span[contains(text(),'Доска Спринт 1')]/parent::div/following-sibling::div");
+    public static SelenideElement infoTasks2 = $x("//span[contains(text(),'Доска Спринт 2')]/parent::div/following-sibling::div");
     public static void changeViewList(){
         btnChangeView.click();
         btnList.click();
@@ -54,5 +57,12 @@ public class BoardPage {
         btnBusinessProcess.click();
         btnConfirm.click();
         btnConfirmError.click();
+    }
+
+    public static void transitionTasksTest(){
+        btnProjects.click();
+        btnProjectTest.click();
+        btnListTasks.click();
+
     }
 }

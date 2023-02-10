@@ -15,7 +15,6 @@ public class WebHooks {
         open("https://edujira.ifellow.ru/");
         authentication(ConfProperties.getProperty("login"), ConfProperties.getProperty("password"));
         btnEnter.click();
-        sleep(5000);
     }
 
     @After

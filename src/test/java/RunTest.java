@@ -9,12 +9,22 @@ import static Jira.pageElements.PopupCreate.*;
 
 public class RunTest extends WebHooks {
 
-    @Test
+    /*@Test
     public void transitionalToTheTasks(){
         openAllTasks();
         changeViewList();
         System.out.println("Всего задач: " + valueTaskAll.getText());
         changeView();
+    }*/
+
+    @Test
+    public void transitionalToTheTasksTest(){
+        transitionTasksTest();
+        int tasks1 = Integer.parseInt(infoTasks1.getText().split(" ")[0]);
+        int tasks2 = Integer.parseInt(infoTasks2.getText().split(" ")[0]);
+        int listTasks = Integer.parseInt(listTask.getText().split(" ")[0]);
+        int inWorkTasksProject = tasks1 + tasks2 + listTasks;
+        System.out.println("Задач в работе (проект TEST): " + inWorkTasksProject);
     }
 
     @Test
