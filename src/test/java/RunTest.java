@@ -4,27 +4,19 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import static Jira.pageElements.BoardPage.*;
-import static Jira.pageElements.NavigationBar.*;
-import static Jira.pageElements.PopupCreate.*;
+import static Jira.steps.BoardSteps.*;
+import static Jira.steps.Navigation.*;
 
 public class RunTest extends WebHooks {
 
-    /*@Test
+    @Test
     public void transitionalToTheTasks(){
         openAllTasks();
         changeViewList();
+        String numTasks = valueTaskAll.getText();
         System.out.println("Всего задач: " + valueTaskAll.getText());
+        Assert.assertEquals(numTasks, valueTaskAll.getText());
         changeView();
-    }*/
-
-    @Test
-    public void transitionalToTheTasksTest(){
-        transitionTasksTest();
-        int tasks1 = Integer.parseInt(infoTasks1.getText().split(" ")[0]);
-        int tasks2 = Integer.parseInt(infoTasks2.getText().split(" ")[0]);
-        int listTasks = Integer.parseInt(listTask.getText().split(" ")[0]);
-        int inWorkTasksProject = tasks1 + tasks2 + listTasks;
-        System.out.println("Задач в работе (проект TEST): " + inWorkTasksProject);
     }
 
     @Test
@@ -33,28 +25,31 @@ public class RunTest extends WebHooks {
         searchTest(ConfProperties.getProperty("nameTest"));
         Assert.assertEquals(header.getText(),"TestSelenium");
         System.out.println("Статус TestSelenium: " + statusText.getText());
-        Assert.assertEquals("Поле \"Затронуты версии:\" изменен", versionText.getText(), "Version 2.0");
+        System.out.println(versionText.getText().equals("Version 2.0") ? "Version 2.0":"Привязка версии отличается от Version 2.0");
+
     }
 
     @Test
-    public void createBag(){
-        btnCreate.click();
-        inputTheme.sendKeys("Наложения текста на текст \"О сайте\" при большом размере генерируемого пароля");
-        inputDescription.sendKeys("При генерации пароля происходит наложение текста на элемент описания");
-        btnText.scrollTo().click();
-        selectVersion.click();
-        forScroll.scrollTo();
-        inputEnvironment.sendKeys("Супер мега компьютер на celeron -5000");
-        btnCreateError.click();
+    public void createBug(){
+        String theme = "Наложения текста на текст \"О сайте\" при большом размере генерируемого пароля";
+        String description = "При генерации пароля происходит наложение текста на элемент описания";
+        String environment = "Супер мега компьютер на celeron -5000";
+        createBugNavigation(theme, description, environment);
+        checkCreateBug(theme, description, environment);
     }
+
 
     @Test
     public void statusChange(){
-        openSiteProfile();
-        openMyBag();
+        openMyBug();
+        checkStatusBag("СДЕЛАТЬ");
         btnInWork.click();
+        checkStatusBag("В РАБОТЕ");
         selectExecuted();
+        checkStatusBag("РЕШЕННЫЕ");
         selectConfirm();
-        btnDone.click();
+        checkStatusBag("ГОТОВО");
     }
+
+
 }

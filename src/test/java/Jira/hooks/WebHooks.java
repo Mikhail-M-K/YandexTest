@@ -1,17 +1,19 @@
 package Jira.hooks;
 
-import org.junit.*;
-
-import Jira.pageElements.LoginPage;
 import Jira.ConfProperties;
-import static com.codeborne.selenide.Selenide.*;
-import static Jira.pageElements.LoginPage.*;
+import com.codeborne.selenide.Configuration;
+import org.junit.After;
+import org.junit.Before;
+
+import static Jira.steps.Authentication.authentication;
+import static Jira.pageElements.LoginPage.btnEnter;
+import static com.codeborne.selenide.Selenide.open;
 
 
 public class WebHooks {
-    public static LoginPage loginPage;
     @Before
     public void authenticationProcess() {
+        Configuration.startMaximized = true;
         open("https://edujira.ifellow.ru/");
         authentication(ConfProperties.getProperty("login"), ConfProperties.getProperty("password"));
         btnEnter.click();
