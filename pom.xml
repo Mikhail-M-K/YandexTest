@@ -159,7 +159,7 @@
                     <perCoreThreadCount>${parallelCount}</perCoreThreadCount>
                     <argLine>
                         -javaagent:"${settings.localRepository}/org/aspectj/aspectjweaver/${aspectj.version}/aspectjweaver-${aspectj.version}.jar"
-                        <!--                        нужно указать кодировку иначе в терминале не будет кирилицы у фич кукумбера-->
+                        <!--                        нужно указать кодировку иначе в терминале не будет кириллицы у фич кукумбера-->
                         -Dfile.encoding=UTF-8
                     </argLine>
                     <failIfNoTests>true</failIfNoTests>
