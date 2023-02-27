@@ -6,7 +6,6 @@ import io.cucumber.java.ru.И;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
-import org.apache.logging.log4j.core.util.JsonUtils;
 import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
@@ -29,7 +28,7 @@ public  class Steps {
             .setBaseUri("https://rickandmortyapi.com/api")
             .build();
 
-    @Дано ("^Получить инфо про Морти$")
+    @Дано ("^Получить инфо про Морти по ID '(.*)'$")
     public void getMorty(String id){
         Response gettingMorty = given()
                 .spec(reqRickMorty)
@@ -95,8 +94,8 @@ public  class Steps {
     }
 
 
-    @Затем ("^Отправить запрос, сравнив результаты$")
-    public void createProject() throws IOException {
+    @Затем ("^Отправить запрос, сравнив результаты c '(.*)', '(.*)'$")
+    public void createPersonAndCheck(String name, String job) throws IOException {
         JSONObject body = new JSONObject(new String(Files.readAllBytes(Paths.get("src/test/resources/json/1.json"))));
         body.put("name", "Tomato");
         body.put("job", "Eat market");
@@ -110,8 +109,8 @@ public  class Steps {
                 .statusCode(201)
                 .extract()
                 .response();
-        Assertions.assertEquals((new JSONObject(postJson.getBody().asString()).get("name")), (body.get("name")), "Fail");
-        Assertions.assertEquals((new JSONObject(postJson.getBody().asString()).get("job")), (body.get("job")), "Fail");
+        Assertions.assertEquals((new JSONObject(postJson.getBody().asString()).get("name")), (name), "Fail");
+        Assertions.assertEquals((new JSONObject(postJson.getBody().asString()).get("job")), (job), "Fail");
         System.out.println("ID созданного пользователя: " + (new JSONObject(postJson.getBody().asString()).get("id")));
         System.out.println("Время создания профиля: " + (new JSONObject(postJson.getBody().asString()).get("createdAt")));
     }
@@ -133,5 +132,4 @@ public  class Steps {
         System.out.println((new JSONObject(postJsonJira.getBody().asString())).getJSONObject("session").get("name"));
         System.out.println((new JSONObject(postJsonJira.getBody().asString())).getJSONObject("session").get("value"));
     }
-
 }
