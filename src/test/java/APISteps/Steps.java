@@ -4,8 +4,11 @@ import io.cucumber.java.ru.Дано;
 import io.cucumber.java.ru.Затем;
 import io.cucumber.java.ru.И;
 import io.restassured.builder.RequestSpecBuilder;
+import io.restassured.builder.ResponseSpecBuilder;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
+import io.restassured.specification.ResponseSpecification;
+import org.apache.logging.log4j.core.util.JsonUtils;
 import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
@@ -13,16 +16,23 @@ import org.junit.jupiter.api.Assertions;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Map;
 
 import static io.restassured.RestAssured.given;
+import static io.restassured.RestAssured.responseSpecification;
 
 public  class Steps {
     public String charId, mortyRace, mortyLocation, personRace, personLocation;
     public int lastEpisode, idLastPerson;
-    public String temp;
+    public Map<String, String> cookies;
 
     public Steps() throws IOException {
     }
+
+    ResponseSpecification responseSpec = new ResponseSpecBuilder()
+                .expectStatusCode(Integer.parseInt("200"))
+                .build();
+
 
     RequestSpecification reqRickMorty = new RequestSpecBuilder()
             .setBaseUri("https://rickandmortyapi.com/api")
@@ -129,7 +139,39 @@ public  class Steps {
                 .extract()
                 .response();
         System.out.println("Признаки авторизации:");
-        System.out.println((new JSONObject(postJsonJira.getBody().asString())).getJSONObject("session").get("name"));
-        System.out.println((new JSONObject(postJsonJira.getBody().asString())).getJSONObject("session").get("value"));
+        System.out.println(new JSONObject(postJsonJira.getBody().asString()));
+        cookies = postJsonJira.getCookies();
+        System.out.println("-------------------------------------------");
     }
+    @Затем ("^Вывод информации по пользователю$")
+    public void getPersonInfo() {
+    Response sessionJira = given()
+            .cookies(cookies)
+            .baseUri("https://edujira.ifellow.ru")
+            .when()
+            .get("/rest/auth/1/session")
+            .then()
+            .log().all()
+            .statusCode(200)
+            .extract()
+            .response();
+    System.out.println(new JSONObject(sessionJira.getBody().asString()));
+    System.out.println("-----------------------------------------------");
+    }
+
+    @Затем ("^Выход пользователя$")
+    public void exitPerson() {
+        Response sessionJira = given()
+                .cookies(cookies)
+                .baseUri("https://edujira.ifellow.ru")
+                .when()
+                .delete("/rest/auth/1/session")
+                .then()
+                .log().all()
+                .statusCode(204)
+                .extract()
+                .response();
+        System.out.println("Выход произошел");
+    }
+
 }
