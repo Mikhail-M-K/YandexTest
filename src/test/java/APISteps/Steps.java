@@ -4,11 +4,8 @@ import io.cucumber.java.ru.Дано;
 import io.cucumber.java.ru.Затем;
 import io.cucumber.java.ru.И;
 import io.restassured.builder.RequestSpecBuilder;
-import io.restassured.builder.ResponseSpecBuilder;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
-import io.restassured.specification.ResponseSpecification;
-import org.apache.logging.log4j.core.util.JsonUtils;
 import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
@@ -19,40 +16,34 @@ import java.nio.file.Paths;
 import java.util.Map;
 
 import static io.restassured.RestAssured.given;
-import static io.restassured.RestAssured.responseSpecification;
 
 public  class Steps {
-    public String charId, mortyRace, mortyLocation, personRace, personLocation;
+    public String charId, characterRace, characterLocation, personRace, personLocation, characterName;
     public int lastEpisode, idLastPerson;
     public Map<String, String> cookies;
 
-    public Steps() throws IOException {
-    }
-
-    ResponseSpecification responseSpec = new ResponseSpecBuilder()
-                .expectStatusCode(Integer.parseInt("200"))
-                .build();
 
 
     RequestSpecification reqRickMorty = new RequestSpecBuilder()
             .setBaseUri("https://rickandmortyapi.com/api")
             .build();
 
-    @Дано ("^Получить инфо про Морти по ID '(.*)'$")
-    public void getMorty(String id){
-        Response gettingMorty = given()
+    @Дано ("^Получить инфо про персонажа по ID '(.*)'$")
+    public void getCharacter(String id){
+        Response gettingCharacter = given()
                 .spec(reqRickMorty)
                 .when()
                 .get("/character/" + id)
                 .then()
                 .extract()
                 .response();
-        charId = new JSONObject(gettingMorty.getBody().asString()).get("id").toString();
-        mortyRace = new JSONObject(gettingMorty.getBody().asString()).get("species").toString();
-        mortyLocation = new JSONObject(gettingMorty.getBody().asString()).getJSONObject("location").get("name").toString();
-        System.out.println("ID Морти: " + charId);
+        charId = new JSONObject(gettingCharacter.getBody().asString()).get("id").toString();
+        characterName = new JSONObject(gettingCharacter.getBody().asString()).get("name").toString();
+        characterRace = new JSONObject(gettingCharacter.getBody().asString()).get("species").toString();
+        characterLocation = new JSONObject(gettingCharacter.getBody().asString()).getJSONObject("location").get("name").toString();
+        System.out.println("Персонаж под ID " + charId + " : " + characterName);
     }
-    @Затем("^Получить последний эпизод с участием Морти$")
+    @Затем("^Получить последний эпизод с участием выбранного персонажа$")
     public void getEpisode(){
         Response gettingLastEpisode = given()
                 .spec(reqRickMorty)
@@ -64,7 +55,7 @@ public  class Steps {
         int episode = (new JSONObject(gettingLastEpisode.getBody().asString()).getJSONArray("episode").length()-1);
         lastEpisode = Integer.parseInt(new JSONObject(gettingLastEpisode.getBody().asString())
                 .getJSONArray("episode").get(episode).toString().replaceAll("[^0-9]",""));
-        System.out.println("Последний эпизод где присутствовал Морти: " + lastEpisode);
+        System.out.println("Последний эпизод где присутствовал "+ characterName +": " + lastEpisode);
     }
 
     @Затем("^Получить последнего персонажа в эпизоде$")
@@ -94,13 +85,13 @@ public  class Steps {
         personRace = new JSONObject(gettingParametersPerson.getBody().asString()).get("species").toString();
         personLocation = new JSONObject(gettingParametersPerson.getBody().asString()).getJSONObject("location").get("name").toString();
         System.out.println("Данные персонажа: " + personRace + ", " + personLocation);
-        System.out.println("Данные Морти: " + mortyRace +  ", " + mortyLocation);
+        System.out.println("Данные " + characterName + ": " + characterRace +  ", " + characterLocation);
     }
 
     @И("^Сравнить совпадение расы и локаций$")
     public void checkData(){
-        Assert.assertEquals("Расы отличаются => ",personRace, mortyRace);
-        Assert.assertEquals("Места нахождения отличаются => ",personLocation, mortyLocation);
+        Assert.assertEquals("Расы отличаются => ",personRace, characterRace);
+        Assert.assertEquals("Места нахождения отличаются => ",personLocation, characterLocation);
     }
 
 
@@ -145,18 +136,18 @@ public  class Steps {
     }
     @Затем ("^Вывод информации по пользователю$")
     public void getPersonInfo() {
-    Response sessionJira = given()
-            .cookies(cookies)
-            .baseUri("https://edujira.ifellow.ru")
-            .when()
-            .get("/rest/auth/1/session")
-            .then()
-            .log().all()
-            .statusCode(200)
-            .extract()
-            .response();
-    System.out.println(new JSONObject(sessionJira.getBody().asString()));
-    System.out.println("-----------------------------------------------");
+        Response sessionJira = given()
+                .cookies(cookies)
+                .baseUri("https://edujira.ifellow.ru")
+                .when()
+                .get("/rest/auth/1/session")
+                .then()
+                .log().all()
+                .statusCode(200)
+                .extract()
+                .response();
+        System.out.println(new JSONObject(sessionJira.getBody().asString()));
+        System.out.println("-----------------------------------------------");
     }
 
     @Затем ("^Выход пользователя$")
@@ -175,3 +166,4 @@ public  class Steps {
     }
 
 }
+
