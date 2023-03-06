@@ -3,6 +3,7 @@ package APISteps;
 import io.cucumber.java.ru.Дано;
 import io.cucumber.java.ru.Затем;
 import io.cucumber.java.ru.И;
+import io.qameta.allure.Step;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
@@ -18,18 +19,20 @@ import java.util.Map;
 import static io.restassured.RestAssured.given;
 
 public  class Steps {
-    public String charId, characterRace, characterLocation, personRace, personLocation, characterName;
-    public int lastEpisode, idLastPerson;
-    public Map<String, String> cookies;
+    public static String charId, characterRace, characterLocation, personRace, personLocation, characterName;
+    public static int lastEpisode, idLastPerson;
+    public static Map<String, String> cookies;
 
 
 
-    RequestSpecification reqRickMorty = new RequestSpecBuilder()
+    static RequestSpecification reqRickMorty = new RequestSpecBuilder()
             .setBaseUri("https://rickandmortyapi.com/api")
             .build();
 
+
     @Дано ("^Получить инфо про персонажа по ID '(.*)'$")
-    public void getCharacter(String id){
+    @Step("Получение информации по  персонажу {id}")
+    public static void getCharacter(String id){
         Response gettingCharacter = given()
                 .spec(reqRickMorty)
                 .when()
@@ -43,8 +46,10 @@ public  class Steps {
         characterLocation = new JSONObject(gettingCharacter.getBody().asString()).getJSONObject("location").get("name").toString();
         System.out.println("Персонаж под ID " + charId + " : " + characterName);
     }
+
+    @Step("Получение последнего эпизод с участием выбранного персонажа")
     @Затем("^Получить последний эпизод с участием выбранного персонажа$")
-    public void getEpisode(){
+    public static void getEpisode(){
         Response gettingLastEpisode = given()
                 .spec(reqRickMorty)
                 .when()
@@ -58,8 +63,9 @@ public  class Steps {
         System.out.println("Последний эпизод где присутствовал "+ characterName +": " + lastEpisode);
     }
 
+    @Step("Получение последнего персонажа в эпизоде")
     @Затем("^Получить последнего персонажа в эпизоде$")
-    public void getPerson() {
+    public static void getPerson() {
         Response gettingLastPerson = given()
                 .spec(reqRickMorty)
                 .when()
@@ -73,8 +79,9 @@ public  class Steps {
         System.out.println("ID последнего персонажа в эпизоде: " + idLastPerson);
     }
 
+    @Step("Получение информации о последнем персонаже")
     @Затем("^Получить информацию о последнем персонаже$")
-    public void getPersonLast(){
+    public static void getPersonLast(){
         Response gettingParametersPerson = given()
                 .spec(reqRickMorty)
                 .when()
@@ -88,15 +95,16 @@ public  class Steps {
         System.out.println("Данные " + characterName + ": " + characterRace +  ", " + characterLocation);
     }
 
+    @Step("Сравнение совпадение расы и локаций")
     @И("^Сравнить совпадение расы и локаций$")
-    public void checkData(){
+    public static void checkData(){
         Assert.assertEquals("Расы отличаются => ",personRace, characterRace);
         Assert.assertEquals("Места нахождения отличаются => ",personLocation, characterLocation);
     }
 
-
+    @Step("Отправление запроса и сравнение результатов c {name}, {job}")
     @Затем ("^Отправить запрос, сравнив результаты c '(.*)', '(.*)'$")
-    public void createPersonAndCheck(String name, String job) throws IOException {
+    public static void createPersonAndCheck(String name, String job) throws IOException {
         JSONObject body = new JSONObject(new String(Files.readAllBytes(Paths.get("src/test/resources/json/1.json"))));
         body.put("name", "Tomato");
         body.put("job", "Eat market");
@@ -116,8 +124,9 @@ public  class Steps {
         System.out.println("Время создания профиля: " + (new JSONObject(postJson.getBody().asString()).get("createdAt")));
     }
 
+    @Step("Авторизация на Jira")
     @Затем ("^Авторизация на Jira$")
-    public void authorizationJira() throws IOException {
+    public static void authorizationJira() throws IOException {
         JSONObject body = new JSONObject(new String(Files.readAllBytes(Paths.get("src/test/resources/json/2.json"))));
         Response postJsonJira = given()
                 .header("Content-type", "application/json")
@@ -134,8 +143,10 @@ public  class Steps {
         cookies = postJsonJira.getCookies();
         System.out.println("-------------------------------------------");
     }
+
+    @Step("Вывод информации по пользователю")
     @Затем ("^Вывод информации по пользователю$")
-    public void getPersonInfo() {
+    public static void getPersonInfo() {
         Response sessionJira = given()
                 .cookies(cookies)
                 .baseUri("https://edujira.ifellow.ru")
@@ -150,8 +161,9 @@ public  class Steps {
         System.out.println("-----------------------------------------------");
     }
 
+    @Step("Выход пользователя")
     @Затем ("^Выход пользователя$")
-    public void exitPerson() {
+    public static void exitPerson() {
         Response sessionJira = given()
                 .cookies(cookies)
                 .baseUri("https://edujira.ifellow.ru")
@@ -164,6 +176,5 @@ public  class Steps {
                 .response();
         System.out.println("Выход произошел");
     }
-
 }
 
