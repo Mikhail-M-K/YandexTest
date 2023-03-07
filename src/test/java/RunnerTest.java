@@ -1,3 +1,4 @@
+import Hooks.ApiHooks;
 import com.codeborne.selenide.logevents.SelenideLogger;
 import io.cucumber.junit.Cucumber;
 import io.cucumber.junit.CucumberOptions;
@@ -13,7 +14,7 @@ import org.junit.runner.RunWith;
         snippets = CucumberOptions.SnippetType.CAMELCASE
 )
 
-public class RunnerTest {
+public class RunnerTest extends ApiHooks {
     public static void before(){
         SelenideLogger.addListener("AllureSelenide",
                 new AllureSelenide()
