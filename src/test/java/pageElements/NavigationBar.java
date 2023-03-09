@@ -1,4 +1,4 @@
-package Jira.pageElements;
+package pageElements;
 
 import com.codeborne.selenide.SelenideElement;
 
