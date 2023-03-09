@@ -4,7 +4,7 @@ import io.qameta.allure.Step;
 
 import static Jira.pageElements.LoginPage.*;
 
-public class Authentication {
+public class AuthenticationSteps {
     @Step("Ввод логина и пароля")
     public static void authentication(String login, String password){
         loginInput.sendKeys(login);
