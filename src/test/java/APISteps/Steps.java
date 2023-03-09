@@ -1,8 +1,6 @@
 package APISteps;
 
-import io.cucumber.java.ru.Дано;
-import io.cucumber.java.ru.Затем;
-import io.cucumber.java.ru.И;
+import io.qameta.allure.Allure;
 import io.qameta.allure.Step;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.response.Response;
@@ -19,7 +17,7 @@ import java.util.Map;
 import static io.restassured.RestAssured.given;
 
 public  class Steps {
-    public static String charId, characterRace, characterLocation, personRace, personLocation, characterName;
+    public static String charId, characterRace, characterLocation, personRace, personLocation, characterName, personName;
     public static int lastEpisode, idLastPerson;
     public static Map<String, String> cookies;
 
@@ -30,7 +28,6 @@ public  class Steps {
             .build();
 
 
-    @Дано ("^Получить инфо про персонажа по ID '(.*)'$")
     @Step("Получение информации по  персонажу {id}")
     public static void getCharacter(String id){
         Response gettingCharacter = given()
@@ -45,10 +42,16 @@ public  class Steps {
         characterRace = new JSONObject(gettingCharacter.getBody().asString()).get("species").toString();
         characterLocation = new JSONObject(gettingCharacter.getBody().asString()).getJSONObject("location").get("name").toString();
         System.out.println("Персонаж под ID " + charId + " : " + characterName);
+
+        Allure.addAttachment("ID персанажа", charId);
+        Allure.addAttachment("Имя персанажа", characterName);
+        Allure.addAttachment("Раса персанажа", characterRace);
+        Allure.addAttachment("Локация персанажа", characterLocation);
+
+
     }
 
     @Step("Получение последнего эпизод с участием выбранного персонажа")
-    @Затем("^Получить последний эпизод с участием выбранного персонажа$")
     public static void getEpisode(){
         Response gettingLastEpisode = given()
                 .spec(reqRickMorty)
@@ -61,10 +64,11 @@ public  class Steps {
         lastEpisode = Integer.parseInt(new JSONObject(gettingLastEpisode.getBody().asString())
                 .getJSONArray("episode").get(episode).toString().replaceAll("[^0-9]",""));
         System.out.println("Последний эпизод где присутствовал "+ characterName +": " + lastEpisode);
+
+        Allure.addAttachment("Последний эпизод где присутствовал "+ characterName +": ", "" + lastEpisode);
     }
 
     @Step("Получение последнего персонажа в эпизоде")
-    @Затем("^Получить последнего персонажа в эпизоде$")
     public static void getPerson() {
         Response gettingLastPerson = given()
                 .spec(reqRickMorty)
@@ -77,10 +81,11 @@ public  class Steps {
         idLastPerson = Integer.parseInt(new JSONObject(gettingLastPerson.getBody().asString())
                 .getJSONArray("characters").get(person).toString().replaceAll("[^0-9]", ""));
         System.out.println("ID последнего персонажа в эпизоде: " + idLastPerson);
+
+        Allure.addAttachment("ID последнего персонажа в эпизоде", "" + idLastPerson);
     }
 
     @Step("Получение информации о последнем персонаже")
-    @Затем("^Получить информацию о последнем персонаже$")
     public static void getPersonLast(){
         Response gettingParametersPerson = given()
                 .spec(reqRickMorty)
@@ -89,21 +94,29 @@ public  class Steps {
                 .then()
                 .extract()
                 .response();
+        personName = new JSONObject(gettingParametersPerson.getBody().asString()).get("name").toString();
         personRace = new JSONObject(gettingParametersPerson.getBody().asString()).get("species").toString();
         personLocation = new JSONObject(gettingParametersPerson.getBody().asString()).getJSONObject("location").get("name").toString();
         System.out.println("Данные персонажа: " + personRace + ", " + personLocation);
         System.out.println("Данные " + characterName + ": " + characterRace +  ", " + characterLocation);
+
+        Allure.addAttachment("Раса " + personName + ": ", personRace);
+        Allure.addAttachment("Локация " + personName + ": ", personLocation);
     }
 
     @Step("Сравнение совпадение расы и локаций")
-    @И("^Сравнить совпадение расы и локаций$")
     public static void checkData(){
+        Allure.addAttachment("Раса " + personName + ": ", personRace);
+        Allure.addAttachment("Локация " + personName + ": ", personLocation);
+
+        Allure.addAttachment("Раса " + characterName + ": ", characterRace);
+        Allure.addAttachment("Локация " + characterName + ": ", characterLocation);
+
         Assert.assertEquals("Расы отличаются => ",personRace, characterRace);
         Assert.assertEquals("Места нахождения отличаются => ",personLocation, characterLocation);
     }
 
     @Step("Отправление запроса и сравнение результатов c {name}, {job}")
-    @Затем ("^Отправить запрос, сравнив результаты c '(.*)', '(.*)'$")
     public static void createPersonAndCheck(String name, String job) throws IOException {
         JSONObject body = new JSONObject(new String(Files.readAllBytes(Paths.get("src/test/resources/json/1.json"))));
         body.put("name", "Tomato");
@@ -120,12 +133,17 @@ public  class Steps {
                 .response();
         Assertions.assertEquals((new JSONObject(postJson.getBody().asString()).get("name")), (name), "Fail");
         Assertions.assertEquals((new JSONObject(postJson.getBody().asString()).get("job")), (job), "Fail");
-        System.out.println("ID созданного пользователя: " + (new JSONObject(postJson.getBody().asString()).get("id")));
-        System.out.println("Время создания профиля: " + (new JSONObject(postJson.getBody().asString()).get("createdAt")));
+        String idAccount = new JSONObject(postJson.getBody().asString()).get("id").toString();
+        String timeCreate = new JSONObject(postJson.getBody().asString()).get("createdAt").toString();
+        System.out.println("ID созданного пользователя: " + idAccount);
+        System.out.println("Время создания профиля: " + timeCreate);
+
+        Allure.addAttachment("Отправленный json с данными", body.toString());
+        Allure.addAttachment("ID созданного пользователя", idAccount);
+        Allure.addAttachment("Время создания профиля", timeCreate);
     }
 
     @Step("Авторизация на Jira")
-    @Затем ("^Авторизация на Jira$")
     public static void authorizationJira() throws IOException {
         JSONObject body = new JSONObject(new String(Files.readAllBytes(Paths.get("src/test/resources/json/2.json"))));
         Response postJsonJira = given()
@@ -138,14 +156,16 @@ public  class Steps {
                 .statusCode(200)
                 .extract()
                 .response();
+        String authorizationJson = new JSONObject(postJsonJira.getBody().asString()).toString();
         System.out.println("Признаки авторизации:");
-        System.out.println(new JSONObject(postJsonJira.getBody().asString()));
+        System.out.println(authorizationJson);
         cookies = postJsonJira.getCookies();
         System.out.println("-------------------------------------------");
+        Allure.addAttachment("Данные для авторизации", body.toString());
+        Allure.addAttachment("Признаки авторизации", authorizationJson);
     }
 
     @Step("Вывод информации по пользователю")
-    @Затем ("^Вывод информации по пользователю$")
     public static void getPersonInfo() {
         Response sessionJira = given()
                 .cookies(cookies)
@@ -157,14 +177,16 @@ public  class Steps {
                 .statusCode(200)
                 .extract()
                 .response();
-        System.out.println(new JSONObject(sessionJira.getBody().asString()));
+        String infoAccount = new JSONObject(sessionJira.getBody().asString()).toString();
+        System.out.println(infoAccount);
         System.out.println("-----------------------------------------------");
+
+        Allure.addAttachment("Информация о пользователе", infoAccount);
     }
 
     @Step("Выход пользователя")
-    @Затем ("^Выход пользователя$")
     public static void exitPerson() {
-        Response sessionJira = given()
+        Response exitJira = given()
                 .cookies(cookies)
                 .baseUri("https://edujira.ifellow.ru")
                 .when()
@@ -175,6 +197,8 @@ public  class Steps {
                 .extract()
                 .response();
         System.out.println("Выход произошел");
+        //String exitAccount = new JSONObject(exitJira.getBody().asString()).toString();
+        Allure.addAttachment("Статус запроса на выход пользователя", exitJira.getStatusCode() + "");
     }
 }
 
