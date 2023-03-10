@@ -20,8 +20,6 @@ public class WebHooks {
 
         open("https://edujira.ifellow.ru/");
         authentication("myasnikovm", "Qwerty123");
-        Allure.addAttachment("Логин для входа", "myasnikovm");
-        Allure.addAttachment("Пароль для входа", "Qwerty123");
     }
 
     @After

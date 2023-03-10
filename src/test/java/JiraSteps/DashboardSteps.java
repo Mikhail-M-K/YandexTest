@@ -2,6 +2,7 @@ package JiraSteps;
 
 import io.cucumber.java.ru.Когда;
 import io.cucumber.java.ru.Тогда;
+import io.qameta.allure.Allure;
 import org.junit.Assert;
 
 import static com.codeborne.selenide.Selenide.sleep;
@@ -23,11 +24,12 @@ public class DashboardSteps {
         btnListView("Список").click();
     }
 
-    @Когда("Проверка на количество задач")
+    @Тогда("Проверка на количество задач")
     public static void checkTasksOutput() {
         String numTasks = valueTaskAll.getText();
         System.out.println("Всего задач: " + valueTaskAll.getText());
         Assert.assertEquals(numTasks, valueTaskAll.getText());
+        Allure.addAttachment("Количество заведенных задач", numTasks);
     }
 
     @Когда("Переход к детальному просмотру")
