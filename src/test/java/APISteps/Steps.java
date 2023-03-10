@@ -100,6 +100,7 @@ public  class Steps {
         System.out.println("Данные персонажа: " + personRace + ", " + personLocation);
         System.out.println("Данные " + characterName + ": " + characterRace +  ", " + characterLocation);
 
+        Allure.addAttachment("Имя персанажа", personName);
         Allure.addAttachment("Раса " + personName + ": ", personRace);
         Allure.addAttachment("Локация " + personName + ": ", personLocation);
     }
@@ -107,9 +108,8 @@ public  class Steps {
     @Step("Сравнение совпадение расы и локаций")
     public static void checkData(){
         Allure.addAttachment("Раса " + personName + ": ", personRace);
-        Allure.addAttachment("Локация " + personName + ": ", personLocation);
-
         Allure.addAttachment("Раса " + characterName + ": ", characterRace);
+        Allure.addAttachment("Локация " + personName + ": ", personLocation);
         Allure.addAttachment("Локация " + characterName + ": ", characterLocation);
 
         Assert.assertEquals("Расы отличаются => ",personRace, characterRace);
